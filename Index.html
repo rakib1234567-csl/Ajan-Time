@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>PrayTime | AR BOT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0; font-family: Arial; background: #f5f5f5;
+    }
+    header {
+      background: #007b7f;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+    }
+    .logo {
+      width: 30px; height: 30px;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+    .menu-btn {
+      font-size: 26px;
+      cursor: pointer;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0; right: -250px;
+      width: 250px; height: 100%;
+      background: white;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+      padding: 20px;
+      transition: right 0.3s;
+      z-index: 1000;
+    }
+    .sidebar.active {
+      right: 0;
+    }
+    .sidebar h3 {
+      margin-top: 0;
+    }
+    .sidebar a {
+      display: block;
+      margin: 15px 0;
+      color: #007b7f;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .content { padding: 20px; }
+    table {
+      width: 100%; margin-top: 20px;
+      border-collapse: collapse;
+    }
+    td {
+      padding: 10px;
+      font-size: 18px;
+      border-bottom: 1px solid #ccc;
+    }
+    .highlight { color: orange; font-weight: bold; }
+    #countdown {
+      font-size: 28px; margin-top: 20px;
+    }
+    select, button {
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button.play-btn {
+      padding: 6px 10px;
+      margin-left: 10px;
+      background: #009688;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>
+    <img class="logo" src="https://cdn-icons-png.flaticon.com/512/1055/1055646.png" alt="Logo">
+    🕌 PrayTime
+  </h1>
+  <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+</header>
+
+<!-- Sidebar Menu -->
+<div class="sidebar" id="sidebar">
+  <h3>মেনু</h3>
+  <a href="#" onclick="showPage('home')">🏠 Home</a>
+  <a href="#" onclick="showPage('settings')">⚙️ Settings</a>
+  <a href="#" onclick="showPage('contact')">📞 Contact</a>
+</div>
+
+<!-- Main Content -->
+<div class="content">
+  <!-- Home -->
+  <div id="home">
+    <h2>🕒 আজকের সময়সূচী</h2>
+    <p id="todayDate"></p>
+
+    <table>
+      <tr><td>Fajr</td><td id="fajrTime">3:39 AM</td></tr>
+      <tr><td>Sunrise</td><td id="sunriseTime">5:07 AM</td></tr>
+      <tr><td>Duhr</td><td id="duhrTime">11:57 AM</td></tr>
+      <tr><td>Asr</td><td id="asrTime">3:19 PM</td></tr>
+      <tr><td class="highlight">Maghrib</td><td id="maghribTime">6:47 PM</td></tr>
+      <tr><td>Isha</td><td id="ishaTime">8:15 PM</td></tr>
+      <tr><td>Extra Ajan</td><td id="extraTime">10:00 PM</td></tr>
+    </table>
+
+    <h3>⏳ পরবর্তী নামাজ: <span id="nextPrayer">Maghrib</span></h3>
+    <div id="countdown">1:15:31</div>
+  </div>
+
+  <!-- Settings -->
+  <div id="settings" style="display:none;">
+    <h2>⚙️ Settings</h2>
+    <label>Location (GMT+):</label><br>
+    <select id="zone">
+      <option value="6">GMT+6 (Sylhet)</option>
+      <option value="5">GMT+5</option>
+      <option value="7">GMT+7</option>
+    </select>
+
+    <br><br>
+
+    <label>আজান সুর নির্বাচন:</label><br>
+    <select id="azanSound">
+      <option value="azan1.mp3">আজান ১</option>
+      <option value="azan2.mp3">আজান ২</option>
+      <option value="https://cdn.islamic.network/audio/azan.mp3">আজান ৩</option>
+    </select>
+    <button class="play-btn" onclick="playAzan()">▶️ Play</button><br><br>
+
+    <label><input type="checkbox" id="autoPlay" checked> Auto Play Adhan</label>
+    <audio id="adhanPlayer" src="azan1.mp3"></audio>
+
+    <br><br>
+    <label>🔗 আপনার লোগোর লিংক দিন (img URL):</label><br>
+    <input type="text" id="logoURL" placeholder="Logo Image URL" onchange="updateLogo()" style="width: 100%; padding: 8px;">
+  </div>
+
+  <!-- Contact -->
+  <div id="contact" style="display:none;">
+    <h2>📞 যোগাযোগ</h2>
+    <p><strong>নাম:</strong> Rakib Ali (RAKIB BOSS)</p>
+    <p><strong>ঠিকানা:</strong> Ambarkhana Point, Sunamganj Road, Sylhet</p>
+    <p><strong>মোবাইল:</strong> +8801601-150660</p>
+    <p><strong>ইমেইল:</strong> rakib.ali.csl@gmail.com</p>
+    <p><strong>ফেসবুক:</strong> <a href="https://facebook.com/profile.php?id=100044487340424" target="_blank">View Profile</a></p>
+    <p><strong>ইউটিউব:</strong> <a href="https://youtube.com/@ar.creative.studio" target="_blank">AR Creative Studio</a></p>
+  </div>
+</div>
+
+<script>
+  const prayers = {
+    Fajr: "03:39", Sunrise: "05:07", Duhr: "11:57",
+    Asr: "15:19", Maghrib: "18:47", Isha: "20:15", Extra: "22:00"
+  };
+
+  function updateTime() {
+    const now = new Date();
+    document.getElementById("todayDate").innerText = now.toDateString();
+
+    let nextName = "", nextTime = null;
+    for (const [name, time] of Object.entries(prayers)) {
+      const [h, m] = time.split(":").map(Number);
+      const prayerTime = new Date(now);
+      prayerTime.setHours(h, m, 0);
+
+      if (prayerTime > now) {
+        nextName = name;
+        nextTime = prayerTime;
+        break;
+      }
+    }
+
+    if (!nextTime) {
+      const [h, m] = prayers.Fajr.split(":").map(Number);
+      nextTime = new Date(now);
+      nextTime.setDate(now.getDate() + 1);
+      nextTime.setHours(h, m, 0);
+      nextName = "Fajr";
+    }
+
+    document.getElementById("nextPrayer").innerText = nextName;
+
+    const diff = Math.floor((nextTime - now) / 1000);
+    const hrs = String(Math.floor(diff / 3600)).padStart(2, "0");
+    const mins = String(Math.floor((diff % 3600) / 60)).padStart(2, "0");
+    const secs = String(diff % 60).padStart(2, "0");
+
+    document.getElementById("countdown").innerText = `${hrs}:${mins}:${secs}`;
+
+    if (diff === 0 && document.getElementById("autoPlay").checked) {
+      document.getElementById("adhanPlayer").play();
+    }
+
+    setTimeout(updateTime, 1000);
+  }
+
+  function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("active");
+  }
+
+  function showPage(pageId) {
+    ["home", "settings", "contact"].forEach(id => {
+      document.getElementById(id).style.display = "none";
+    });
+    document.getElementById(pageId).style.display = "block";
+    toggleSidebar();
+  }
+
+  document.getElementById("azanSound").addEventListener("change", e => {
+    document.getElementById("adhanPlayer").src = e.target.value;
+  });
+
+  function playAzan() {
+    const audio = document.getElementById("adhanPlayer");
+    audio.src = document.getElementById("azanSound").value;
+    audio.play();
+  }
+
+  function updateLogo() {
+    const logoURL = document.getElementById("logoURL").value;
+    document.querySelector(".logo").src = logoURL;
+  }
+
+  updateTime();
+</script>
+</body>
+</html>
